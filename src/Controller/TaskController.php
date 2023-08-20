@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Task;
-use AppBundle\Form\TaskType;
+use App\Form\TaskType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class TaskController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted()&&$form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
             $em->persist($task);
