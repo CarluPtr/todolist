@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,13 +83,19 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task)
+    public function deleteTaskAction(TaskRepository $taskRepository, int $id, EntityManagerInterface $entityManager, Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
+        $task = $taskRepository->findOneBy(array('id' =>$id));
+        $user = $this->getUser();
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+        if ($user == $task->getUser()) {
+            $entityManager->remove($task);
+            $entityManager->flush();
+            $this->addFlash('success', 'La tâche a bien été supprimée.');
+        } else {
+            throw new \Exception("Vous n'avez pas les permissions pour effectuer cette action.");
+        }
+
 
         return $this->redirectToRoute('task_list');
     }

@@ -121,4 +121,9 @@ class Task
 
         return $this;
     }
+
+    public function completeTask(): bool
+    {
+        return $this->isDone = 1;
+    }
 }
